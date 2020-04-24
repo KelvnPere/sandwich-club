@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     tools:context="com.udacity.sandwichclub.DetailActivity">
 
+    
+<!--    TODO 1= Read and Understand the code in JSONUtils.java and Details Activity, and work on the design of the page. -->
     <ImageView
         android:id="@+id/image_iv"
         android:layout_width="match_parent"
