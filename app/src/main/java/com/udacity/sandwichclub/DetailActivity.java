@@ -3,6 +3,8 @@ package com.udacity.sandwichclub;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,14 +27,14 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         ImageView ingredientsIv = findViewById(R.id.image_iv);
 
         Intent intent = getIntent();
         if (intent == null) {
             closeOnError();
         }
-
-
         assert intent != null;
         int position = intent.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION);
         if (position == DEFAULT_POSITION) {
@@ -62,31 +64,41 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-
-    // This we i am to implement the code which will populate the layout from the JSON to the activity.
     private void populateUI(Sandwich sandwich) {
         ImageView ingredientsIv = findViewById(R.id.image_iv);
         TextView alsoNameDisplay = findViewById(R.id.also_known_tv);
         TextView ingredientsDisplay = findViewById(R.id.ingredients_tv);
         TextView descriptionDisplay = findViewById(R.id.description_tv);
         TextView originDisplay = findViewById(R.id.origin_tv);
+        TextView alsoKnow_placeholder = findViewById(R.id.alsoKnow_placeholder);
+        TextView origin_placeholder = findViewById(R.id.origin_placeholder);
 
         Picasso.with(this)
                 .load(sandwich.getImage())
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher_round)
                 .into(ingredientsIv);
 
-        setTitle(sandwich.getMainName());
-        List<String> nameList = sandwich.getAlsoKnownAs();
-        for(int i=0 ; i< nameList.size() ; i++){
-            alsoNameDisplay.append(nameList.get(i) + ". ");
+        if (sandwich.getPlaceOfOrigin().isEmpty()) {
+            origin_placeholder.setVisibility(View.GONE);
+            originDisplay.setVisibility(View.GONE);
+        } else {
+            originDisplay.setText(sandwich.getPlaceOfOrigin());
         }
 
-        List<String> ingredientsList = sandwich.getIngredients();
-        for(int i=0 ; i< ingredientsList.size() ; i++){
-            ingredientsDisplay.append(ingredientsList.get(i) + ". ");
+        if (sandwich.getAlsoKnownAs().isEmpty()) {
+            alsoKnow_placeholder.setVisibility(View.GONE);
+            alsoNameDisplay.setVisibility(View.GONE);
+        } else {
+            List<String> aka = sandwich.getAlsoKnownAs();
+            String aka_str = TextUtils.join(", ", aka);
+            alsoNameDisplay.setText(aka_str);
         }
 
-        originDisplay.append(sandwich.getPlaceOfOrigin());
-        descriptionDisplay.append(sandwich.getDescription());
+        ingredientsDisplay.setText(sandwich.getDescription());
+
+        List<String> ing = sandwich.getIngredients();
+        String ing_str = TextUtils.join(", ", ing);
+        ingredientsDisplay.setText(ing_str);
     }
 }
